@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Configure Pawrp",
+      "type": "shell",
+      "command": "cmake -S . -B build",
+    },
+    {
+      "label": "Build Pawrp",
+      "type": "shell",
+      "command": "cmake --build build",
+      "dependsOn": "Configure Pawrp",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": "$gcc",
+    },
+    {
+      "label": "Run Pawrp Standalone",
+      "type": "shell",
+      "command": "killall Pawrp; ./build/Pawrp_artefacts/Standalone/Pawrp.app/Contents/MacOS/Pawrp",
+      "dependsOn": "Build Pawrp",
+    },
+    {
+      "label": "Validate Pawrp plugin using pluginval",
+      "type": "shell",
+      "command": "/Applications/pluginval.app/Contents/MacOS/pluginval --validate ./build/Pawrp_artefacts",
+      "dependsOn": "Build Pawrp",
+    },
+  ]
+}
