@@ -15,7 +15,7 @@ PluginProcessor::PluginProcessor()
 
 
   parameters.addParameterListener("param1", this);
-  parameters.addParameterListener("param2", this);
+  parameters.addParameterListener("gain", this);
   parameters.addParameterListener("param3", this);
 
 
@@ -152,7 +152,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         updateParameters();
 }
 
-
+    auto gainValue = parameters.getRawParameterValue("gain")->load();
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -171,8 +171,14 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
-        juce::ignoreUnused (channelData);
-        // ..do something to the data...
+        auto numSamples = buffer.getNumSamples();
+        auto* inputData = buffer.getReadPointer (channel);
+         for (int n = 0; n < numSamples; n++)
+        {
+            auto x = buffer.getSample(channel, *inputData + n);
+            auto y = x * gainValue;
+            buffer.setSample(channel, *channelData + n, y);
+        }
     }
 }
 
@@ -230,16 +236,16 @@ void PluginProcessor::updateParameters()
 {
     // Get parameters
     auto defaultParam1 = parameters.getParameter ("param1");
-    auto defaultParam2 = parameters.getParameter ("param2");
+    auto gainParam = parameters.getParameter ("gain");
     auto defaultParam3 = parameters.getParameter ("param3");
 
     // Get values
     auto defaultVal1 = static_cast<juce::AudioParameterInt*> (defaultParam1)->get();
-    auto defaultVal2 = static_cast<juce::AudioParameterFloat*> (defaultParam2)->get();
+    auto gainVal = static_cast<juce::AudioParameterFloat*> (gainParam)->get();
     auto defaultVal3 = static_cast<juce::AudioParameterChoice*> (defaultParam3)->getCurrentChoiceName();
 
     // Do something with the parameter values
-    juce::ignoreUnused(defaultVal1, defaultVal2, defaultVal3);
+    juce::ignoreUnused(defaultVal1, gainVal, defaultVal3);
 
     // Reset flag
     parametersNeedUpdating = false;

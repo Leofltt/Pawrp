@@ -55,7 +55,7 @@ public:
         layout.add (std::make_unique<juce::AudioParameterInt> ("param1", "Default Param 1", 0, 12, 0));
 
         // Default param2
-        layout.add (std::make_unique<juce::AudioParameterFloat> ("param2", "Default Param 2", 0.0f, 1.0f, 0.5f));
+        layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.1f, 0.5f));
 
        // Default param3
         layout.add (std::make_unique<juce::AudioParameterChoice> ("param3", "Default Param 3", juce::StringArray { "Option 1", "Option 2", "Option 3" }, 0));
