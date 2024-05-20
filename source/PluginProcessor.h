@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include "DSP/Allpass.h"
 
 #if (MSVC)
 #include "ipps.h"
@@ -51,14 +52,17 @@ public:
     {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-        // Default param1
         layout.add (std::make_unique<juce::AudioParameterInt> ("param1", "Default Param 1", 0, 12, 0));
 
-        // Default param2
         layout.add (std::make_unique<juce::AudioParameterFloat> ("gain", "Gain", 0.0f, 1.1f, 0.5f));
 
-       // Default param3
         layout.add (std::make_unique<juce::AudioParameterChoice> ("param3", "Default Param 3", juce::StringArray { "Option 1", "Option 2", "Option 3" }, 0));
+
+        layout.add (std::make_unique<juce::AudioParameterFloat> ("allpass_gain", "Allpass Gain", -1.0f, 1.0f, 0.5f));
+
+        layout.add (std::make_unique<juce::AudioParameterFloat> ("allpass_frequency", "Allpass Frequency", -22000.0f, 22000.0f, 10.0f));
+
+
 
         return layout;
     }
@@ -68,6 +72,8 @@ public:
     juce::AudioProcessorValueTreeState parameters { *this, nullptr, "Parameters", createParameterLayout() };
     void parameterChanged (const juce::String& parameterID, float newValue) override;
     void updateParameters();
+
+    AllpassFilter allpass;
 
     juce::AudioProcessorValueTreeState& getValueTreeState() { return parameters; }
 

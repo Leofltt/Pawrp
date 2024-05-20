@@ -10,13 +10,16 @@ PluginProcessor::PluginProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+     allpass(10., 44100)
 {
 
 
   parameters.addParameterListener("param1", this);
   parameters.addParameterListener("gain", this);
   parameters.addParameterListener("param3", this);
+  parameters.addParameterListener("allpass_gain", this);
+  parameters.addParameterListener("allpass_frequency", this);
 
 
 #if USING_RUST
@@ -31,8 +34,10 @@ PluginProcessor::~PluginProcessor()
 
 
   parameters.removeParameterListener("param1", this);
-  parameters.removeParameterListener("param2", this);
+  parameters.removeParameterListener("gain", this);
   parameters.removeParameterListener("param3", this);
+  parameters.removeParameterListener("allpass_gain", this);
+  parameters.removeParameterListener("allpass_frequency", this);
 
 }
 
@@ -106,6 +111,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    allpass.setSampleRate(sampleRate);
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 }
 
@@ -153,6 +159,11 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 }
 
     auto gainValue = parameters.getRawParameterValue("gain")->load();
+    auto allpassGainValue = parameters.getRawParameterValue("allpass_gain")->load();
+    auto allpassFrequencyValue = parameters.getRawParameterValue("allpass_frequency")->load();
+
+    allpass.setGain(allpassGainValue);
+    allpass.setFrequency(allpassFrequencyValue);
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -176,7 +187,8 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
          for (int n = 0; n < numSamples; n++)
         {
             auto x = buffer.getSample(channel, *inputData + n);
-            auto y = x * gainValue;
+            auto y = allpass.process(x);
+            y *= gainValue;
             buffer.setSample(channel, *channelData + n, y);
         }
     }

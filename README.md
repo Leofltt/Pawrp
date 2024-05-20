@@ -4,7 +4,7 @@
 
 A simple plugin to try out cookiejuce
 
-Generated using [Cookiejuce](github.com/madskjeldgaard/Cookiejuce).
+Generated using [Cookiejuce](https://github.com/madskjeldgaard/Cookiejuce).
 
 ## Building
 
