@@ -31,6 +31,7 @@ double AllpassFilter::process(double input) {
     yd = allpassDelayBuffer.readWriteIdx();
     auto y = ((-1.0 * g) * x) + xd + (g * yd);
     allpassDelayBuffer.writeDelay(x + (g * xd));
+    allpassDelayBuffer.updateWriteIndex();
     return y;
 }
 
