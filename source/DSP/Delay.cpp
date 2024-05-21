@@ -5,7 +5,7 @@ DelayBuffer::DelayBuffer(int maxDelayInSamples)
     : maxDelayLength(maxDelayInSamples),
       buffer(maxDelayInSamples, 0.0f),
       writeIndex(0),
-      delayInSamples(0) {}
+      delayInSamples(1) {}
 
 void DelayBuffer::setDelayLength(int newDelayLength) {
     if (newDelayLength >= 0 && newDelayLength < maxDelayLength) {

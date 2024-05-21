@@ -8,7 +8,6 @@
 AllpassFilter::AllpassFilter(int allpassDelay, int sampRate)
     : sampleRate(sampRate),
       allpassDelayBuffer(sampleRate),
-      dt(0.0f),
       g(0.5f),
       xd(0.0f),
       yd(0.0f) {
@@ -29,9 +28,9 @@ void AllpassFilter::setGain(double gain) {
 double AllpassFilter::process(double input) {
     auto x = input;
     xd = allpassDelayBuffer.readDelay();
+    yd = allpassDelayBuffer.readWriteIdx();
     auto y = ((-1.0 * g) * x) + xd + (g * yd);
-    yd = x + (g * xd);
-    allpassDelayBuffer.writeDelay(yd);
+    allpassDelayBuffer.writeDelay(x + (g * xd));
     return y;
 }
 

@@ -60,7 +60,7 @@ public:
 
         layout.add (std::make_unique<juce::AudioParameterFloat> ("allpass_gain", "Allpass Gain", -1.0f, 1.0f, 0.5f));
 
-        layout.add (std::make_unique<juce::AudioParameterInt> ("allpass_delay", "Allpass Delay", 0, 22000, 10));
+        layout.add (std::make_unique<juce::AudioParameterInt> ("allpass_delay", "Allpass Delay", 0, 12000, 1));
 
 
 
@@ -74,6 +74,7 @@ public:
     void updateParameters();
 
     AllpassFilter allpass;
+    double volume = 1.0f;
 
     juce::AudioProcessorValueTreeState& getValueTreeState() { return parameters; }
 

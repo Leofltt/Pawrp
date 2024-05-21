@@ -11,7 +11,7 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-     allpass(10, getSampleRate())
+     allpass(1, getSampleRate())
 {
 
 
@@ -158,13 +158,6 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         updateParameters();
 }
 
-    auto gainValue = parameters.getRawParameterValue("gain")->load();
-    auto allpassGainValue = parameters.getRawParameterValue("allpass_gain")->load();
-    auto allpassDelayValue = parameters.getRawParameterValue("allpass_delay")->load();
-
-    allpass.setGain(allpassGainValue);
-    allpass.setDelayLength(allpassDelayValue);
-
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -189,7 +182,7 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         {
             auto x = buffer.getSample(channel, *inputData + n);
             auto y = allpass.process(x);
-            y *= gainValue;
+            y *= volume;
             buffer.setSample(channel, *channelData + n, y);
         }
     }
@@ -251,14 +244,22 @@ void PluginProcessor::updateParameters()
     auto defaultParam1 = parameters.getParameter ("param1");
     auto gainParam = parameters.getParameter ("gain");
     auto defaultParam3 = parameters.getParameter ("param3");
+    auto allpassGainParam = parameters.getParameter ("allpass_gain");
+    auto allpassDelayParam = parameters.getParameter ("allpass_delay");
 
     // Get values
     auto defaultVal1 = static_cast<juce::AudioParameterInt*> (defaultParam1)->get();
     auto gainVal = static_cast<juce::AudioParameterFloat*> (gainParam)->get();
     auto defaultVal3 = static_cast<juce::AudioParameterChoice*> (defaultParam3)->getCurrentChoiceName();
+    auto allpassGainVal = static_cast<juce::AudioParameterFloat*> (allpassGainParam)->get();
+    auto allpassDelayVal = static_cast<juce::AudioParameterInt*> (allpassDelayParam)->get();
+
+    allpass.setGain(allpassGainVal);
+    allpass.setDelayLength(allpassDelayVal);
+    volume = gainVal;
 
     // Do something with the parameter values
-    juce::ignoreUnused(defaultVal1, gainVal, defaultVal3);
+    juce::ignoreUnused(defaultVal1, gainVal, defaultVal3, allpassDelayVal, allpassGainVal);
 
     // Reset flag
     parametersNeedUpdating = false;

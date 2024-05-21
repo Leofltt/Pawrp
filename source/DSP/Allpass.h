@@ -13,7 +13,7 @@ class AllpassFilter {
 
   private:
     int sampleRate;
-    double dt, g, xd, yd;
+    double g, xd, yd;
     DelayBuffer allpassDelayBuffer;
 
 };
