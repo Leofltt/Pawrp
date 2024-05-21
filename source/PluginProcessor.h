@@ -60,7 +60,7 @@ public:
 
         layout.add (std::make_unique<juce::AudioParameterFloat> ("allpass_gain", "Allpass Gain", -1.0f, 1.0f, 0.5f));
 
-        layout.add (std::make_unique<juce::AudioParameterFloat> ("allpass_frequency", "Allpass Frequency", -22000.0f, 22000.0f, 10.0f));
+        layout.add (std::make_unique<juce::AudioParameterInt> ("allpass_delay", "Allpass Delay", 0, 22000, 10));
 
 
 

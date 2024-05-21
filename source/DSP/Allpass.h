@@ -4,18 +4,16 @@
 
 class AllpassFilter {
     public:
-    AllpassFilter(double freqHz, int sampleRate);
+    AllpassFilter(int allpassDelay, int sampleRate);
 
     double process(double input);
-    void setFrequency(double freqHz);
     void setGain(double gain);
-    double getFrequency();
     void setSampleRate(int sampleRate);
+    void setDelayLength(int newDelayLength);
 
   private:
     int sampleRate;
     double dt, g, xd, yd;
-    DelayBuffer ffDelay;
-    DelayBuffer fbDelay;
+    DelayBuffer allpassDelayBuffer;
 
 };

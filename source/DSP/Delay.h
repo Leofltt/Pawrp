@@ -7,6 +7,10 @@ public:
 
     void setDelayLength(int newDelayLength);
     double process(double inputSample);
+    double readDelay(); 
+    void writeDelay(double value) { buffer[writeIndex] = value; }
+    void clear() { std::fill(buffer.begin(), buffer.end(), 0.0f); }
+    void updateWriteIndex() { writeIndex = (writeIndex + 1) % maxDelayLength; }
 
 private:
     int maxDelayLength;

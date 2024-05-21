@@ -15,16 +15,19 @@ void DelayBuffer::setDelayLength(int newDelayLength) {
     }
 }
 
-double DelayBuffer::process(double inputSample) {
+double DelayBuffer::readDelay() {
     auto readIndex = writeIndex - delayInSamples;
     if (readIndex < 0) {
         readIndex += maxDelayLength;
     }
+    return buffer[readIndex];
+}
 
-    double delayedSample = buffer[readIndex];
-    buffer[writeIndex] = inputSample;
+double DelayBuffer::process(double inputSample) {
 
-    writeIndex = (writeIndex + 1) % maxDelayLength;
+    double delayedSample = readDelay();
+    writeDelay(inputSample);
+    updateWriteIndex();
 
     return delayedSample;
 }

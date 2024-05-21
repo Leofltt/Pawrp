@@ -11,7 +11,7 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-     allpass(10., 44100)
+     allpass(10, getSampleRate())
 {
 
 
@@ -37,7 +37,7 @@ PluginProcessor::~PluginProcessor()
   parameters.removeParameterListener("gain", this);
   parameters.removeParameterListener("param3", this);
   parameters.removeParameterListener("allpass_gain", this);
-  parameters.removeParameterListener("allpass_frequency", this);
+  parameters.removeParameterListener("allpass_delay", this);
 
 }
 
@@ -160,10 +160,11 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     auto gainValue = parameters.getRawParameterValue("gain")->load();
     auto allpassGainValue = parameters.getRawParameterValue("allpass_gain")->load();
-    auto allpassFrequencyValue = parameters.getRawParameterValue("allpass_frequency")->load();
+    auto allpassDelayValue = parameters.getRawParameterValue("allpass_delay")->load();
 
     allpass.setGain(allpassGainValue);
-    allpass.setFrequency(allpassFrequencyValue);
+    allpass.setDelayLength(allpassDelayValue);
+
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
