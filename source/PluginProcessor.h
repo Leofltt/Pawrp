@@ -73,8 +73,8 @@ public:
     void parameterChanged (const juce::String& parameterID, float newValue) override;
     void updateParameters();
 
-    AllpassFilter allpass;
-    double volume = 1.0f;
+    std::unique_ptr<AllpassFilter> allpass;
+    float volume = 1.0f;
 
     juce::AudioProcessorValueTreeState& getValueTreeState() { return parameters; }
 

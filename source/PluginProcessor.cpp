@@ -10,8 +10,7 @@ PluginProcessor::PluginProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ),
-     allpass(1, 44100)
+                       ) 
 {
 
 
@@ -111,8 +110,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    allpass.setSampleRate(int(sampleRate));
-    allpass.setDelayLength(1);
+    allpass = std::make_unique<AllpassFilter>(1, int(sampleRate));
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 }
 
@@ -178,13 +176,12 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     {
         auto* channelData = buffer.getWritePointer (channel);
         auto numSamples = buffer.getNumSamples();
-        auto* inputData = buffer.getReadPointer (channel);
          for (int n = 0; n < numSamples; n++)
         {
-            auto x = buffer.getSample(channel, *inputData + n);
-            // auto y = allpass.process(x);
-            x *= volume;
-            buffer.setSample(channel, *channelData + n, x);
+            auto x = buffer.getSample(channel, *channelData + n);
+            auto y = allpass->process(x);
+            y *= volume;
+            buffer.setSample(channel, *channelData + n, y);
         }
     }
 }
@@ -255,8 +252,8 @@ void PluginProcessor::updateParameters()
     auto allpassGainVal = static_cast<juce::AudioParameterFloat*> (allpassGainParam)->get();
     auto allpassDelayVal = static_cast<juce::AudioParameterInt*> (allpassDelayParam)->get();
 
-    allpass.setGain(allpassGainVal);
-    allpass.setDelayLength(allpassDelayVal);
+    allpass->setGain(allpassGainVal);
+    allpass->setDelayLength(allpassDelayVal);
     volume = gainVal;
 
     // Do something with the parameter values
