@@ -11,7 +11,7 @@ PluginProcessor::PluginProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-     allpass(1, getSampleRate())
+     allpass(1, 44100)
 {
 
 
@@ -111,7 +111,8 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    allpass.setSampleRate(sampleRate);
+    allpass.setSampleRate(int(sampleRate));
+    allpass.setDelayLength(1);
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 }
 
@@ -181,9 +182,9 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
          for (int n = 0; n < numSamples; n++)
         {
             auto x = buffer.getSample(channel, *inputData + n);
-            auto y = allpass.process(x);
-            y *= volume;
-            buffer.setSample(channel, *channelData + n, y);
+            // auto y = allpass.process(x);
+            x *= volume;
+            buffer.setSample(channel, *channelData + n, x);
         }
     }
 }

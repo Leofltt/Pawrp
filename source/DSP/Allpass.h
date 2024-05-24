@@ -6,14 +6,15 @@ class AllpassFilter {
     public:
     AllpassFilter(int allpassDelay, int sampleRate);
 
-    double process(double input);
-    void setGain(double gain);
+    float process(float input);
+    void setGain(float gain);
     void setSampleRate(int sampleRate);
     void setDelayLength(int newDelayLength);
+    void clear();
 
   private:
     int sampleRate;
-    double g, xd, yd;
+    float g;
     DelayBuffer allpassDelayBuffer;
 
 };

@@ -4,18 +4,15 @@
 class DelayBuffer {
 public:
     DelayBuffer(int maxDelayInSamples);
-
     void setDelayLength(int newDelayLength);
-    double process(double inputSample);
-    double readDelay(); 
-    double readWriteIdx() { return buffer[writeIndex]; }
-    void writeDelay(double value) { buffer[writeIndex] = value; }
-    void clear() { std::fill(buffer.begin(), buffer.end(), 0.0f); }
-    void updateWriteIndex() { writeIndex = (writeIndex + 1) % maxDelayLength; }
+    float readDelay(); 
+    void writeDelay(float value);
+    void clear(); 
 
 private:
     int maxDelayLength;
-    std::vector<double> buffer;
+    std::vector<float> buffer;
     int writeIndex;
+    int readIndex;
     int delayInSamples;
 };
