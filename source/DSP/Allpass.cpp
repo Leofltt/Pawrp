@@ -5,10 +5,14 @@
 
 
 
-AllpassFilter::AllpassFilter(int allpassDelay, int sampRate)
+AllpassFilter::AllpassFilter(int allpassDelay, int sampRate, int numChannels)
     : sampleRate(sampRate),
-      allpassDelayBuffer(sampleRate),
+      numChannels(numChannels),
       g(0.5f) {
+    allpassDelayVec.reserve(numChannels);
+    for (int i = 0; i < numChannels; ++i) {
+        allpassDelayVec.emplace_back(DelayBuffer(sampleRate));
+    }
     setDelayLength(allpassDelay);
 }
 
@@ -23,18 +27,22 @@ void AllpassFilter::setGain(float gain) {
 }
 
 
-float AllpassFilter::process(float input) {
-    auto delayedSample = allpassDelayBuffer.readDelay();
+float AllpassFilter::process(float input, int channel) {
+    auto delayedSample = allpassDelayVec[channel].readDelay();
     auto y = (-1.0 * g) * input + delayedSample + g * input;
-    allpassDelayBuffer.writeDelay(input + g * delayedSample);
+    allpassDelayVec[channel].writeDelay(input + g * delayedSample);
     return y;
 }
 
 
 void AllpassFilter::setDelayLength(int newDelayLength) {
-    allpassDelayBuffer.setDelayLength(newDelayLength);
+    for (auto &delay : allpassDelayVec) {
+        delay.setDelayLength(newDelayLength);
+    }
 }
 
 void AllpassFilter::clear() {
-    allpassDelayBuffer.clear();
+   for (auto &delay : allpassDelayVec) {
+        delay.clear();
+    }
 }

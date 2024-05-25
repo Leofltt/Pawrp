@@ -4,9 +4,9 @@
 
 class AllpassFilter {
     public:
-    AllpassFilter(int allpassDelay, int sampleRate);
+    AllpassFilter(int allpassDelay, int sampleRate, int numChannels);
 
-    float process(float input);
+    float process(float input, int channel);
     void setGain(float gain);
     void setSampleRate(int sampleRate);
     void setDelayLength(int newDelayLength);
@@ -15,6 +15,7 @@ class AllpassFilter {
   private:
     int sampleRate;
     float g;
-    DelayBuffer allpassDelayBuffer;
+    int numChannels;
+    std::vector<DelayBuffer> allpassDelayVec;
 
 };

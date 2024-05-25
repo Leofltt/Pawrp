@@ -110,7 +110,7 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    allpass = std::make_unique<AllpassFilter>(1, int(sampleRate));
+    allpass = std::make_unique<AllpassFilter>(1, int(sampleRate), getNumOutputChannels());
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 }
 
@@ -178,10 +178,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         auto numSamples = buffer.getNumSamples();
          for (int n = 0; n < numSamples; n++)
         {
-            auto x = buffer.getSample(channel, *channelData + n);
-            auto y = allpass->process(x);
+            auto x = buffer.getSample(channel, n);
+            auto y = allpass->process(x, channel);
             y *= volume;
-            buffer.setSample(channel, *channelData + n, y);
+            buffer.setSample(channel, n, y);
         }
     }
 }
